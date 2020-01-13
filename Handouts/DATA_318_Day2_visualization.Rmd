@@ -1,0 +1,138 @@
+---
+title: "DATA 318 Day 2 - Visualization"
+author: "Greg Tanner"
+date: "1/13/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+if (!require('tidyverse')) install.packages('tidyverse') # This installs the 'tidyverse' package if it is not already installed 
+library('tidyverse') # this loads the 'tidyverse' package
+if (!require('dslabs')) install.packages('dslabs') # This installs the 'dslabs' package if it is not already installed 
+library('dslabs') # this loads the 'dslabs' package which contains the gun murder data
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like the one below. Try executing the chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r murders}
+summary(murders) # This is gun murders for each state from 2010. This data is provided by the dslabs package.
+```
+
+## Including Plots
+
+You can also embed plots like the one below. Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r plot_murders, echo=FALSE}
+plot(murders$population,murders$total)
+```
+
+## Your Biggest Friend in Learning R - ?
+
+The question mark "?" is probably one of the most useful tricks to help you learn R. 
+If you don't remember how to use an R command simply type ? followed by the name of the function and that will pull up the help file. Try it in the r chunk below. Type `?plot` and press *Ctrl+Shift+Enter*.
+
+```{r help}
+
+```
+
+Use the help documentation for plot to recreate the total murders vs population graph with nice axis labels ("State Population" and "Gun Murders in 2010") and a title ("Gun Murders versus Population for Each State and DC").
+
+```{r with_labels_and_titles}
+
+```
+
+## Visualization using ggplot2
+
+Although the base R installation has some decent graphics capabilities (plot, hist and boxplot might come in handy), we will focus on ggplot. The gg in ggplot stands for "Grammar of Graphics," the idea that all graphs are built from the same components: data, a coordinate system and geoms (visual marks that represent data). The basic template for using ggplot is:
+
+```{r eval = FALSE}
+ggplot(data = <DATA>) + 
+  <GEOM_FUNCTION>(mapping = aes(<MAPPINGS>))
+```
+
+Here is a first example. The geom_point() function creates a scatter plot. The mapping assigns data (population and total) to the different characteristics (x and y).
+
+```{r geom_point}
+ggplot(data = murders) + 
+  geom_point(mapping = aes(x = population, y = total))
+```
+
+There are many different geom functions.
+
+```{r histogram_density}
+ggplot(data = murders) + 
+  geom_histogram(mapping = aes(x = population)) 
+
+ggplot(data = murders) + 
+  geom_density(mapping = aes(x = population)) 
+```
+
+In Rstudio, go to Help -> Cheatsheets -> Data Visualization with ggplot2. Download the cheatsheet.
+Pick out one geom function and use it examine the murders data.
+Note how some geoms are designed for continuous data and some for discrete (categorical) data.
+The gun murders contains two discrete (state/abb and region) and two continuous variables (population and total).
+Don't forget to remove the `eval=FALSE`.
+
+```{r eval=FALSE}
+ggplot(data = murders) + 
+  geom_(mapping = aes()) 
+```
+
+The beautiful thing about the grammar of graphics is that it allows the user to easily layer geoms.
+
+```{r }
+ggplot(data = murders) + 
+  geom_point(mapping = aes(x = population, y = total)) +
+  geom_smooth(mapping = aes(x = population, y = total), method = "lm") # lm stands for linear model
+```
+
+What does the slope of the previous line represent? Is there a way that we can compute it directly?
+The command sum may be useful.
+
+```{r}
+murder_rate <- 
+
+ggplot(data = murders) + 
+  geom_point(mapping = aes(x = population, y = total)) +
+  geom_abline(slope = murder_rate)
+```
+
+
+To modify a graph, we simply add more to the commands.
+Looking back at the histogram of the population, we see that the distribution is right skewed (most states have small populations,  few have large populations).
+We can account for this by plotting with logarithmic scales.
+Notice that when we switch from linear to logarithmic scales the slope becomes the intercept. Why?
+
+```{r }
+ggplot(data = murders) + 
+  geom_point(mapping = aes(x = population, y = total)) +
+  geom_abline(intercept = log10(murder_rate)) +
+  scale_x_log10() +
+  scale_y_log10()   
+```
+
+Let's start making it pretty. Use the cheatsheet to figure out how to add labels and a title. Augment the previous command with appropriate labels and title.
+
+```{r }
+
+```
+
+If you were trying to tell a story about the data, we might want to look at whether the region has a effect on the gun murder rate. 
+Adding color to denote the region requires just adding inside the `aes(x = population, y = total, color = region))`.
+
+```{r }
+
+```
+
+If you were moving to the US, you would want to know which state is which.
+We can add labels to the data points using geom_text.
+
+```{r}
+
+
+```
